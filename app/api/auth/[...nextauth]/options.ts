@@ -41,11 +41,25 @@ export const authOptions: NextAuthOptions = {
              }
         })
 
-    ]
+    ],
 
-    callbaclks: {
-        async jwt({ token, user }) { },
-        async session({ session, token }) { },
+    callbacks: {
+        async jwt({ token, user }) { 
+            if (user) {
+                token._id = user._id?.toString();
+                token.isVerified = user?.isVerified;
+                token.username = user?.username;
+                token.isAcceptingMessage = user?.isAcceptingMessage;
+            }
+        },
+        async session({ session, token }) {
+            if (token) {
+                session.user._id = token._id as string;
+                session.user.isVerified = token.isVerified as boolean;
+                session.user.username = token.username as string;
+                session.user.isAcceptingMessage = token.isAcceptingMessage as boolean;
+            }
+         },
     },
     
     pages: {
