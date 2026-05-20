@@ -2,6 +2,7 @@ import { dbConnect } from "@/lib/dbConnet";
 import { getServerSession, User } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/options";
 import UserModel from "@/model/User";
+import mongoose from "mongoose";
 
 export async function POST(request: Request) {
 
@@ -105,7 +106,7 @@ export async function GET(request: Request) {
         return Response.json(
           {
             success: false,
-            message: "Failed to get message acceptance status",
+            message: "Error in getting messages",
           },
           { status: 500 },
         );
