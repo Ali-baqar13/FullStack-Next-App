@@ -10,6 +10,8 @@ import z from "zod";
 import axios, { AxiosError } from "axios";
 import { ApiResponse } from "@/types/ApiResponse";
 import { toast } from "sonner";
+import {Form} from '@/Components/ui/form'
+
 // export default function Component() {
 //   const { data: session } = useSession();
 //   if (session) {
@@ -78,7 +80,18 @@ const page = () => {
     }catch(err){}
   };
 
-  return <div></div>;
+  return (
+    <div className='flex justify-center items-center min-h-screen bg-gray-100'>
+      <div className='w-full max-w-md  p-8 space-y-8 bg-white rounded-lgshadow-md'>
+        <div className='text-center'>
+          {/* <Form {...form}> */}
+            <form onSubmit={form.handleSubmit(onSubmit)}  className='space-y-6'></form>
+          {/* </Form> */}
+        </div>
+      </div>
+    </div>
+  )
+  
 };
 
 export default page;
