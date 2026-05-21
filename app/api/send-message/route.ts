@@ -17,7 +17,7 @@ export async function POST(request :Request){
        }
 
        const newMessage = { content , createdAt:new Date()}
-       user.messages.push(newMessage as Message) // must watch how ,essage here
+       user.messages.push(newMessage as Message) // must watch how ,message here
        await user.save()
        return Response.json({
         success:true,
