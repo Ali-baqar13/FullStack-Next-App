@@ -3,7 +3,7 @@
 import React, { useEffect } from "react";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { useDebounceCallback, useDebounceValue } from "usehooks-ts";
-import { useForm } from "react-hook-form";
+import { useFormik } from "formik";
 import { signUpSchema } from "@/schemas/signUpSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
@@ -11,8 +11,7 @@ import axios, { AxiosError } from "axios";
 import { ApiResponse } from "@/types/ApiResponse";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input"
-
-import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
+import * as Yup from "yup";import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 
@@ -39,17 +38,41 @@ const page = () => {
   const [usernameMessage, setUsernameMessage] = React.useState("");
   const [loading, setLoading] = React.useState(false);
   const [isCheckingUsername, setIsCheckingUsername] = React.useState(false);
-  const [IsSubmitting, setIsSubmitting] = React.useState(false);
-
+  const [IsSubmitting, setIsSubmitting] = React.useState(false)
   const debounceUsername = useDebounceCallback(setUsername, 300);
-  const form = useForm<z.infer<typeof signUpSchema>>({
-    resolver: zodResolver(signUpSchema),
-    defaultValues: {
+ 
+    const signinSchema = Yup.object({
+      username: Yup.string()
+        .min(2, "username must be at least 2 characters")
+        .max(20, "username must be at most 20 characters"),
+      email: Yup.string().email({ message: "Invalid email address" }),
+      password: Yup
+        .string()
+        .min(6, "password must be at least 6 characters")
+        .max(100, "password must be at most 100 characters"),
+    });
+
+
+  const formik = useFormik({
+    initialValues: {
       username: "",
       email: "",
-      password: "",
+      password: ""
     },
+    validationSchema: signinSchema,
+    onSubmit: async (values) => {
+      setIsSubmitting(true);
+      try {
+        const response = await axios.post<ApiResponse>("/api/auth/sign-up", values);
+        console.log(response, 'checking for data');
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsSubmitting(false);
+      }
+    }
   });
+
   useEffect(() => {
     const checkUsernameUnique = async () => {
       if (username) {
@@ -71,79 +94,77 @@ const page = () => {
     checkUsernameUnique();
   }, [username]);
 
-  const onSubmit = async (data: z.infer<typeof signUpSchema>) => {
-    setIsSubmitting(true);
-    try {
-      const response = await axios.post<ApiResponse>("/api/auth/signup", data);
-      // toast?.({
-      //   title: "Success",
-      //   description: response.data.message,
-      //   type: "success",
-      // })
-      // router.push(`/verify/${username}`); //username bhi miljayeg or code bhi
-    }catch(err){}
-  };
+  // const onSubmit = async (data: z.infer<typeof signUpSchema>) => {
+  //   setIsSubmitting(true);
+  //   try {
+  //     const response = await axios.post<ApiResponse>("/api/auth/sign-up", data);
+  //     console.log(response,'checking for data')
+  //     // toast?.({
+  //     //   title: "Success",
+  //     //   description: response.data.message,
+  //     //   type: "success",
+  //     // })
+  //     // router.push(`/verify/${username}`); //username bhi miljayeg or code bhi
+  //   }catch(err){}
+  // };
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="w-full max-w-md  p-8 space-y-8 bg-white rounded-lgshadow-md">
         <div className="text-center">
-          {/* <Form {...form}> */}
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <FieldGroup>
-              <Field>
-                <FieldLabel htmlFor="name">Username</FieldLabel>
+          <h2 className="text-2xl font-bold text-gray-900">Sign In</h2>
+          <p className="mt-2 text-sm text-gray-600">
+            Enter your credentials to sign in
+          </p>
+
+          <form onSubmit={formik.handleSubmit}>
+            <div className="space-y-4">
+              <FieldGroup>
+                <FieldLabel>Username</FieldLabel>
                 <Input
-                  {...form.register("username")}
-                  name="username"
-                  placeholder="Username"
-                  onChange={(e) => {
-                    form.setValue("username", e.target.value);
-                    debounceUsername(e.target.value);
-                  }}
+                  placeholder="Enter your username"
+                  {...formik.getFieldProps("username")}
                 />
-              </Field>
-              <Field>
-                <FieldLabel htmlFor="Password">Password</FieldLabel>
+                {formik.touched.username && formik.errors.username ? (
+                  <FieldError>{formik.errors.username}</FieldError>
+                ) : null}
+              </FieldGroup>
+
+              <FieldGroup>
+                <FieldLabel>Email</FieldLabel>
                 <Input
-                  {...form.register("password")}
-                  name="password"
+                  placeholder="Enter your email"
+                  {...formik.getFieldProps("email")}
+                />
+                {formik.touched.email && formik.errors.email ? (
+                  <FieldError>{formik.errors.email}</FieldError>
+                ) : null}
+              </FieldGroup>
+
+              <FieldGroup>
+                <FieldLabel>Password</FieldLabel>
+                <Input
                   type="password"
-                  placeholder="Password"
-                  onChange={(e) => {
-                    form.setValue("password", e.target.value);
-                  }}
+                  placeholder="Enter your password"
+                  {...formik.getFieldProps("password")}
                 />
-                <FieldError>Choose another Password.</FieldError>
-              </Field>
+                {formik.touched.password && formik.errors.password ? (
+                  <FieldError>{formik.errors.password}</FieldError>
+                ) : null}
+              </FieldGroup>
+            </div>
 
-              <Field>
-                <FieldLabel htmlFor="email">Email</FieldLabel>
-                <Input
-                  {...form.register("email")}
-                  id="email"
-                  name="email"
-                  type="email"
-                  placeholder="Email"
-                  onChange={(e) => {
-                    form.setValue("email", e.target.value);
-                  }}
-                />
-                <FieldError>Choose another Email.</FieldError>
-              </Field>
-              <Field orientation="horizontal"></Field>
-            </FieldGroup>
-
-            <Button
-              type="submit"
-              disabled={IsSubmitting}
-              className="w-full py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-200"
-            >
-              {IsSubmitting ? <Loader2 /> : "Sign Up"}
+            <Button type="submit" disabled={IsSubmitting}>
+              {IsSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Signing in...
+                </>
+              ) : (
+                "Sign In"
+              )}
             </Button>
           </form>
-          ``
-          {/* </Form> */}
         </div>
       </div>
     </div>
