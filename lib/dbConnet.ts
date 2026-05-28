@@ -18,6 +18,7 @@ export async function dbConnect(): Promise<void>{
 
 
     }catch(e){
+        console.log(e, 'checking for error')
        process.exit()
     }
 }

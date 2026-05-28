@@ -73,26 +73,26 @@ const page = () => {
     }
   });
 
-  useEffect(() => {
-    const checkUsernameUnique = async () => {
-      if (username) {
-        setIsCheckingUsername(true);
-        setUsernameMessage("");
-        try {
-          const response = await axios.get(
-            `/api/auth/check-username-unique?username=${debounceUsername}`,
-          );
-          setUsernameMessage(response.data.message);
-        } catch (error) {
-          const axiosError = error as AxiosError<ApiResponse>;
-          axiosError.response?.data?.message ?? "Error checking username";
-        } finally {
-          setIsCheckingUsername(false);
-        }
-      }
-    };
-    checkUsernameUnique();
-  }, [username]);
+  // useEffect(() => {
+  //   const checkUsernameUnique = async () => {
+  //     if (username) {
+  //       setIsCheckingUsername(true);
+  //       setUsernameMessage("");
+  //       try {
+  //         const response = await axios.get(
+  //           `/api/auth/check-username-unique?username=${debounceUsername}`,
+  //         );
+  //         setUsernameMessage(response.data.message);
+  //       } catch (error) {
+  //         const axiosError = error as AxiosError<ApiResponse>;
+  //         axiosError.response?.data?.message ?? "Error checking username";
+  //       } finally {
+  //         setIsCheckingUsername(false);
+  //       }
+  //     }
+  //   };
+  //   checkUsernameUnique();
+  // }, [username]);
 
   // const onSubmit = async (data: z.infer<typeof signUpSchema>) => {
   //   setIsSubmitting(true);

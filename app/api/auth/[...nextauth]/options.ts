@@ -34,7 +34,7 @@ export const authOptions: NextAuthOptions = {
                     }
                 }catch(err){
                     console.error('error in authorize function', err)
-                    throw new Error('Internal Server Error')
+                    throw new Error('Internal Server Errrrror')
                     return null
                 }
                 
