@@ -23,7 +23,7 @@ export async function POST(Request: Request) {
             },{status:400,})
 
         }
-         const existingUserByEmail =await UserModel.findOne({
+         const existingUserByEmail = await UserModel.findOne({
             email
          })
 

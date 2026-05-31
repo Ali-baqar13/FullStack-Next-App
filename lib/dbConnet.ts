@@ -2,23 +2,22 @@ import mongoose from "mongoose"
 
 
 type ConnectionObject = {
-    isConnected?:number,
+    isConnected?: number,
 }
 
-const Connection:ConnectionObject={}
+const Connection: ConnectionObject = {}
 
-export async function dbConnect(): Promise<void>{
+export async function dbConnect(): Promise<void> {
     if (Connection.isConnected) {
         console.log("database connected")
     }
-    try{
+
+    try {
         const db = await mongoose.connect(process.env.mongo_url || '')
+        console.log(db, 'i have to check db')
         Connection.isConnected = db.connections[0]?.readyState
-
-
-
-    }catch(e){
+    } catch (e) {
         console.log(e, 'checking for error')
-       process.exit()
+        process.exit()
     }
 }

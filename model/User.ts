@@ -7,14 +7,14 @@ export interface Message extends Document {
 }
 
 export interface User extends Document {
-    username: {type:string, required: true, unique: true, trim:true};
-    email: {type:string, required: true, unique: true, trim:true};
-    password: string;
-    isVerified: boolean;
-    messages: Message[];
-    verifyCode: string;
-    verifyCodeExpires: Date;
-    isAcceptingMessages: boolean;
+    username: {type:string, required: true, unique: true, trim:true};  // easy
+    email: {type:string, required: true, unique: true, trim:true};     // easu
+    password: string;  //easy
+    isVerified: boolean;  // easy
+    messages: Message[];   // easy
+    verifyCode: string; // tp easy
+    verifyCodeExpires: Date;  // Expirey of OTP
+    isAcceptingMessages: boolean;  // tricky 
 
 }
 

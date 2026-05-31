@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input"
 import * as Yup from "yup";import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 // export default function Component() {
 //   const { data: session } = useSession();
@@ -40,7 +41,7 @@ const page = () => {
   const [isCheckingUsername, setIsCheckingUsername] = React.useState(false);
   const [IsSubmitting, setIsSubmitting] = React.useState(false)
   const debounceUsername = useDebounceCallback(setUsername, 300);
- 
+  const router = useRouter()
     const signinSchema = Yup.object({
       username: Yup.string()
         .min(2, "username must be at least 2 characters")
@@ -64,7 +65,9 @@ const page = () => {
       setIsSubmitting(true);
       try {
         const response = await axios.post<ApiResponse>("/api/auth/sign-up", values);
-        console.log(response, 'checking for data');
+        // console.log(response, 'checking for data');
+      router.push(`/verify/${username} `)
+
       } catch (error) {
         console.error(error);
       } finally {
