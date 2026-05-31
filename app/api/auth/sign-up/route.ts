@@ -9,6 +9,8 @@ export async function POST(Request: Request) {
 
         const { username, email, password } = await Request.json()
 
+        // console.log(email, 'from inside')
+
         const existingUserVerifiedByUsername = await UserModel.findOne({
 
             username,
@@ -64,7 +66,7 @@ export async function POST(Request: Request) {
             })
             await newUser.save()
 
-            const emailResposne= await sendVerificationEmail(username,email, verifyCode)
+            const emailResposne= await sendVerificationEmail(email,username, verifyCode)
             if(!emailResposne.success){
                 return Response.json({
                     success:false,

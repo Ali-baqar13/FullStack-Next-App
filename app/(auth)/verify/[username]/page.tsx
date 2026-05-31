@@ -1,5 +1,5 @@
 
-
+'use client'
 import axios from 'axios'
 import { useFormik } from 'formik'
 import { useParams, useRouter } from 'next/navigation'
@@ -14,7 +14,7 @@ const verifySchema = yup.object({
     verifyOtp:  yup.string().length(6, 'verify code must have 6 digits')
 })
 
-export const page = () => {
+const page = () => {
     const param = useParams()
     const [IsSubmitting, setIsSubmitting] = React.useState(false)
     
@@ -90,3 +90,5 @@ export const page = () => {
     </div>
   )
 }
+
+export default page;

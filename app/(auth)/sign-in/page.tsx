@@ -66,7 +66,8 @@ const page = () => {
       try {
         const response = await axios.post<ApiResponse>("/api/auth/sign-up", values);
         // console.log(response, 'checking for data');
-      router.push(`/verify/${username} `)
+        console.log(values.username,"username")
+      router.push(`/verify/${values.username}`)
 
       } catch (error) {
         console.error(error);

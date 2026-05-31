@@ -18,8 +18,10 @@ export async function POST(request:Request){
             },{status:500})
         }
 
-        const isCodeExpire =user.verifyCode == code
+        const isCodeExpire = user.verifyCode == code
         const isCodeNotExpired = new Date(user.verifyCodeExpires) > new Date
+
+        
 
         if(isCodeExpire && isCodeNotExpired){
             user.isVerified = true
