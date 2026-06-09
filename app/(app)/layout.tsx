@@ -35,13 +35,10 @@ export default function RootLayout({
     <html lang="en" className={cn("font-sans")}>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <Providers>
-          {" "}
+          >
+              <NavBar />
+      {children}
         
-          {children}
-        </Providers>
-        <Toaster />
       </body>
     </html>
   );
