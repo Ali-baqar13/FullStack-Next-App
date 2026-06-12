@@ -8,9 +8,6 @@ export async function POST(Request: Request) {
     try {
 
         const { username, email, password } = await Request.json()
-
-        // console.log(email, 'from inside')
-
         const existingUserVerifiedByUsername = await UserModel.findOne({
 
             username,
@@ -29,26 +26,29 @@ export async function POST(Request: Request) {
             email
          })
 
-         const verifyCode = Math.floor(10000 + Math.random() * 900000).toString()
+        const verifyCode = Math.floor(10000 + Math.random() * 900000).toString()
+        
          if(existingUserByEmail){
             
             if(existingUserByEmail.isVerified){
-                return Response.json({success:false, message:'user already exist'},{
-                    status:400,
-                
-                })
+                return Response.json(
+                    {
+                        success: false,
+                        message: 'user already exist'
+                    },
+                    {
+                        status: 400
+                    }
+                )
             }
             
-            else{
-                const hashPassword =await bcrypt.hash(password, 10)
-
+            else
+            {
+                const hashPassword = await bcrypt.hash(password, 10)
                 existingUserByEmail.password = hashPassword,
                 existingUserByEmail.verifyCode = verifyCode,
                 existingUserByEmail.verifyCodeExpires = new Date(Date.now()+3600000) 
-
-                await existingUserByEmail.save()
-                
-            }
+                await existingUserByEmail.save()}
         }else{
             const bcryptPassword = await bcrypt.hash(password,10)
             const expiryDate = new Date()
@@ -76,12 +76,7 @@ export async function POST(Request: Request) {
                 status:500,
 
             })
-            }
-
-
-        }
-
-        return Response.json({
+            }} return Response.json({
             success:true,
             message:'user register successfully please verify email',
             

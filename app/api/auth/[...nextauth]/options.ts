@@ -19,7 +19,7 @@ export const authOptions: NextAuthOptions = {
             async authorize(credentials: any) : Promise<any> {
                 await dbConnect();
                 try {
-                    const user = await UserModel.findOne({ $or: [{ email: credentials.identifier }, { password: credentials.identifier }] });
+                    const user = await UserModel.findOne({ $or: [{ email: credentials.identifier }, { username: credentials.identifier }] });
                     if (!user) {
                         throw new Error('No User Found with the provided credentials');
                     }
@@ -32,7 +32,8 @@ export const authOptions: NextAuthOptions = {
                     } else {
                         throw new Error('Invalid password');
                     }
-                }catch(err){
+                }
+                catch (err) {
                     console.error('error in authorize function', err)
                     throw new Error('Internal Server Errrrror')
                     return null
@@ -51,6 +52,7 @@ export const authOptions: NextAuthOptions = {
                 token.username = user?.username;
                 token.isAcceptingMessage = user?.isAcceptingMessage;
             }
+            return token;
         },
         async session({ session, token }) {
             if (token) {
@@ -59,6 +61,7 @@ export const authOptions: NextAuthOptions = {
                 session.user.username = token.username as string;
                 session.user.isAcceptingMessage = token.isAcceptingMessage as boolean;
             }
+            return session;
          },
     },
     

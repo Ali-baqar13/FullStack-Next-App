@@ -26,13 +26,23 @@ export async function GET(request:Request){
 
     try{
         const user = await UserModel.aggregate([
-            {$match:{id:userId},
-            },{$unwind: '$message'},
-            {$sort:{'messages.createdAt':-1}},
-            {$group: {_id:'$_id', messages:{$push:'$messages'}}}  // tom make all messages on only one user thta have token simpy
+        
+            {
+                $match: { id: userId },
+            },
+            {
+                $unwind: '$message'
+            },
+            {
+                $sort: { 'messages.createdAt': -1 }
+            },
+            {
+                $group: { _id: '$_id', messages: { $push: '$messages' } }
+            }
+            
         ])
 
-        if(!user ||  user.length==0){
+        if (!user ||  user.length==0){
             return Response.json({
                 success:false,
                 messages:'user not found'
