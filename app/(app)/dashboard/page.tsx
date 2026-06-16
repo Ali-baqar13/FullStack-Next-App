@@ -1,3 +1,5 @@
+'use client'
+
 import MessageCard from "@/components/common/mesageCard";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";

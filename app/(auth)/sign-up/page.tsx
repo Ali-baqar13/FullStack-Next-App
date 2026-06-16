@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { signIn } from "next-auth/react";
+import { useSession, signIn, signOut } from "next-auth/react";
 import { useDebounceCallback, useDebounceValue } from "usehooks-ts";
 import { useFormik } from "formik";
 import { signUpSchema } from "@/schemas/signUpSchema";
@@ -15,7 +15,6 @@ import * as Yup from "yup";import { Field, FieldDescription, FieldError, FieldGr
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-
 
 // export default function Component() {
 //   const { data: session } = useSession();
@@ -43,9 +42,11 @@ const page = () => {
   const [IsSubmitting, setIsSubmitting] = React.useState(false)
   const debounceUsername = useDebounceCallback(setUsername, 300);
   const router = useRouter()
-    const signUpSchema = Yup.object({
-      
-      identifier: Yup.string().email({ message: "Invalid email address" }),
+    const signinSchema = Yup.object({
+      username: Yup.string()
+        .min(2, "username must be at least 2 characters")
+        .max(20, "username must be at most 20 characters"),
+      email: Yup.string().email({ message: "Invalid email address" }),
       password: Yup
         .string()
         .min(6, "password must be at least 6 characters")
@@ -55,23 +56,23 @@ const page = () => {
 
   const formik = useFormik({
     initialValues: {
-     
-      identifier: "",
+      username: "",
+      email: "",
       password: ""
     },
-    validationSchema: signUpSchema,
+    validationSchema: signinSchema,
     onSubmit: async (values) => {
-      const result = await signIn('credentails', {
-        redirect:false,
-        identifier: values.identifier,
-        password: values.password
+      setIsSubmitting(true);
+      try {
+        const response = await axios.post<ApiResponse>("/api/auth/sign-up", values);
+        // console.log(response, 'checking for data');
+        console.log(values.username,"username")
+      router.push(`/verify/${values.username}`)
 
-      })
-      if (result?.error) {
-        toast.error('something went wrong')
-      }
-      if(result?.url){
-        router.replace('/dashboard')
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsSubmitting(false);
       }
     }
   });
@@ -122,7 +123,16 @@ const page = () => {
 
           <form onSubmit={formik.handleSubmit}>
             <div className="space-y-4">
-              
+              <FieldGroup>
+                <FieldLabel>Username</FieldLabel>
+                <Input
+                  placeholder="Enter your username"
+                  {...formik.getFieldProps("username")}
+                />
+                {formik.touched.username && formik.errors.username ? (
+                  <FieldError>{formik.errors.username}</FieldError>
+                ) : null}
+              </FieldGroup>
 
               <FieldGroup>
                 <FieldLabel>Email</FieldLabel>
@@ -130,8 +140,8 @@ const page = () => {
                   placeholder="Enter your email"
                   {...formik.getFieldProps("email")}
                 />
-                {formik.touched.identifier && formik.errors.identifier ? (
-                  <FieldError>{formik.errors.identifier}</FieldError>
+                {formik.touched.email && formik.errors.email ? (
+                  <FieldError>{formik.errors.email}</FieldError>
                 ) : null}
               </FieldGroup>
 
@@ -152,10 +162,10 @@ const page = () => {
               {IsSubmitting ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Signing in...
+                  Signing up...
                 </>
               ) : (
-                "Sign In"
+                "Sign up"
               )}
             </Button>
           </form>

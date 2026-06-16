@@ -33,14 +33,14 @@ export async function middleware(request: NextRequest) {
   const url = request.nextUrl;
 
   // If logged in and trying to access auth pages
-  if (token && (url.pathname === "/sign-in" || url.pathname === "/sign-up")) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
-  }
+  // if (token && (url.pathname === "/sign-up" || url.pathname === "/sign-in")) {
+  //   return NextResponse.redirect(new URL("/dashboard", request.url));
+  // }
 
   // Protect dashboard routes
-  if (!token && url.pathname.startsWith("/dashboard")) {
-    return NextResponse.redirect(new URL("/sign-in", request.url));
-  }
+  // if (!token && url.pathname.startsWith("/dashboard")) {
+  //   return NextResponse.redirect(new URL("/dashboard", request.url));
+  // }
 
   // Allow request normally
   return NextResponse.next();

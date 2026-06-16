@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input"
 import {FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Loader2 } from 'lucide-react'
 import { Button } from "@/components/ui/button";
+import { toast } from 'sonner'
 const verifySchema = yup.object({
     verifyOtp:  yup.string().length(6, 'verify code must have 6 digits')
 })
@@ -26,12 +27,19 @@ const page = () => {
         onSubmit : async (data: yup.InferType<typeof verifySchema>) => {
             setIsSubmitting(true)
             try{
-                await axios.post('/api/auth/verify-code', {
+                const response = await axios.post('/api/auth/verify-code', {
                     username:param.username,
                     code : data.verifyOtp
                 })
+              console.log(response, 'checking for data')
+              if(response.data.success){
+                toast.success('user verified successfully')
+                router.replace('/sign-up')
+              }else{
+                toast.error(response.data.message || 'failed to verify user')
+              }
 
-                // router.replace('/')
+                
 
             } catch(e){
                 console.log(e, 'I am just checking for verify Code here')
